@@ -1,0 +1,44 @@
+data:
+  start_date: "2018-01-01"
+  end_date: "2024-12-31"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+
+features:
+  rsi_period: 14
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  lookback: 21
+  target_horizon: 5          # k-day forward log-return
+
+graph:
+  correlation_window: 60     # rolling days for Pearson correlation
+  correlation_threshold: 0.4
+  recompute_freq: "W"        # weekly recomputation
+
+model:
+  in_channels: 5             # log_return, rsi, macd_line, macd_signal, macd_hist
+  hidden_channels: 64
+  out_channels: 1
+  periods: 21                # GRU lookback steps
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  train_split: 0.7
+  val_split: 0.15
+  # test_split: 0.15 (remainder)
+  early_stopping_patience: 10
+  seed: 42
+
+loss:
+  alpha: 1.5                 # directional penalty multiplier
+
+paths:
+  model_checkpoint: "data/processed/model.pt"
+  predictions: "data/processed/predictions.csv"
+  metrics: "data/processed/metrics.json"
+  adjacency: "data/processed/adjacency_matrices.pkl"
+  features: "data/processed/features.pkl"
